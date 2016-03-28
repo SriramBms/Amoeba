@@ -23,7 +23,7 @@
 
     <include layout="@layout/content_main" />
 
-    <com.eo5.amoeba.views.FloatingFissionButton
+    <com.eo5.amoeba.views.FissionColony
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_add"
         app:fb_enable_fission="false"
-        app:fb_elevation="5dp"
+        app:fb_elevation="@dimen/default_elevation"
         app:fb_direction="up"
         />
 

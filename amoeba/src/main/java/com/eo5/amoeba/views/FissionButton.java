@@ -19,7 +19,7 @@ import com.eo5.amoeba.utils.Constants;
  *
  * WIP: Use FloatingActionButton until this feature has been defined and implemented
  */
-public class FloatingFissionButton extends FloatingActionButton{
+public class FissionButton extends FloatingActionButton{
 
     private boolean mCanReplicate=false;
     private Context mContext;
@@ -42,13 +42,13 @@ public class FloatingFissionButton extends FloatingActionButton{
     //
 
 
-    public FloatingFissionButton(Context context) {
+    public FissionButton(Context context) {
         this(context, null);
     }
-    public FloatingFissionButton(Context context, AttributeSet attrs) {
+    public FissionButton(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
-    public FloatingFissionButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FissionButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
         mAttrs = attrs;
@@ -76,6 +76,8 @@ public class FloatingFissionButton extends FloatingActionButton{
         mChildColor = v.data;
 
     }
+
+
 
     public void doFission(int type){
         if(!mCanReplicate)

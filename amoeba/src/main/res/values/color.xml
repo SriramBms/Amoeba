@@ -2,4 +2,5 @@
 <resources>
     <color name="button_default">#888888</color>
     <color name="button_pressed_default">#cccccc</color>
+    <color name="fission_button_default">#ab4599</color>
 </resources>
