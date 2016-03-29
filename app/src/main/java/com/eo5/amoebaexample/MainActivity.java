@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
         fab.setRippleColor(getResources().getColor(R.color.colorRipple));
     }
 

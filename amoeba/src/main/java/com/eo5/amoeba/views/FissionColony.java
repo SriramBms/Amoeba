@@ -3,6 +3,7 @@ package com.eo5.amoeba.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.AttributeSet;
@@ -23,6 +24,12 @@ public class FissionColony extends ViewGroup{
     private boolean mDoesPulse;
     private int mButtonColor;
     private int mMainButtonIconRes;
+    private FloatingActionButton mMainButton;
+
+    //layout params
+    private int mMainButtonY;
+    private int mMainButtonX;
+
 
     public FissionColony(Context context){
         this(context, null, 0);
@@ -50,17 +57,18 @@ public class FissionColony extends ViewGroup{
         TypedValue v = new TypedValue();
         mContext.getTheme().resolveAttribute(R.attr.colorAccent, v, true);
         mButtonColor = v.data;
-        FloatingActionButton mainButton = new FloatingActionButton(mContext);
-        mainButton.setBackground(mContext.getResources().getDrawable(mMainButtonIconRes));
-        mainButton.setElevation(mButtonDepth);
-        mainButton.setId(R.id.fission_button_main);
-        mainButton.setOnClickListener(new OnClickListener() {
+        mMainButton = new FloatingActionButton(mContext);
+        //mMainButton.setBackground(getResources().getDrawable(mMainButtonIconRes));
+        mMainButton.setImageResource(mMainButtonIconRes);
+        mMainButton.setElevation(mButtonDepth);
+        mMainButton.setId(R.id.fission_button_main);
+        mMainButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
-        addView(mainButton, super.generateDefaultLayoutParams());
+        addView(mMainButton, super.generateDefaultLayoutParams());
 
 
     }
@@ -70,6 +78,23 @@ public class FissionColony extends ViewGroup{
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        mMainButtonY = b - t - mMainButton.getMeasuredHeight()-(int)getResources().getDimension(R.dimen.button_shadow_width);
+        mMainButtonX = r - l - mMainButton.getMeasuredWidth();
+        mMainButton.layout(mMainButtonX, mMainButtonY, mMainButtonX+mMainButton.getMeasuredWidth(), mMainButtonY+mMainButton.getMeasuredHeight());
+
+    }
+
+    @Override
+    protected  void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
+        measureChildren(widthMeasureSpec, heightMeasureSpec);
+
+
+        View mainButton = getChildAt(0);
+        int height = mainButton.getMeasuredHeight() + (int)getResources().getDimension(R.dimen.button_spacing) + (int)getResources().getDimension(R.dimen.button_shadow_width);
+        int width = mainButton.getMeasuredWidth();
+
+        setMeasuredDimension(width, height);
+
 
     }
 }

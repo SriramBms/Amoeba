@@ -2,4 +2,5 @@
 <resources>
     <dimen name="default_elevation">2dp</dimen>
     <dimen name="button_spacing">5dp</dimen>
+    <dimen name="button_shadow_width">4dp</dimen>
 </resources>
