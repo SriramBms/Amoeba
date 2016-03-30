@@ -8,6 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AnimationUtils;
+
+import com.eo5.amoeba.views.FissionColony;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fission_button_main);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fission_button);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -28,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         fab.setRippleColor(getResources().getColor(R.color.colorRipple));
+        FissionColony fc = (FissionColony)findViewById(R.id.fab);
+        fc.setFissionButtonAnims(AnimationUtils.loadAnimation(this, R.anim.expand_rotator), AnimationUtils.loadAnimation(this, R.anim.collapse_rotator));
     }
 
     @Override
