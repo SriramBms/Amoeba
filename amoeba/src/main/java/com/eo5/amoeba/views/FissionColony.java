@@ -1,8 +1,15 @@
 package com.eo5.amoeba.views;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -10,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 
 import com.eo5.amoeba.R;
 import com.eo5.amoeba.utils.Constants;
@@ -26,7 +34,7 @@ public class FissionColony extends ViewGroup{
     private int mMainButtonIconRes;
     private FissionButton mMainButton;
     private FloatingActionButton mTestButton;
-    private boolean isExpanded=false;
+    private boolean mIsExpanded =false;
 
     //layout params
     private int mMainButtonY;
@@ -35,11 +43,14 @@ public class FissionColony extends ViewGroup{
     private int mMainButtonHeight;
     private int mShadowRadiusDelta;
     private int mButtonSpacing;
-
+    private float mRotation;
+    private RotatingIcon mIconDrawable;
 
     //animation params
-    private Animation mExpandAnim, mCollapseAnim;
-
+    private Animation mMainExpandAnim, mMainCollapseAnim;
+    private AnimatorSet mExpandAnimSet = new AnimatorSet().setDuration(Constants.DEFAULT_ANIMATION_DURATION);
+    private AnimatorSet mCollapseAnimSet = new AnimatorSet().setDuration(Constants.DEFAULT_ANIMATION_DURATION);
+    private ObjectAnimator mMainExpandAnimator, mMainCollapseAnimator;
 
     public FissionColony(Context context){
         this(context, null, 0);
@@ -57,33 +68,31 @@ public class FissionColony extends ViewGroup{
     }
 
     private void init(AttributeSet attrs){
-        setAnimationParams();
+
         final TypedArray a = mContext.obtainStyledAttributes(attrs, R.styleable.FissionButton);
         mCanReplicate = a.getBoolean(R.styleable.FissionButton_fb_enable_fission, false);
         mButtonDepth = a.getDimension(R.styleable.FissionButton_fb_elevation, Constants.DEFAULT_ELEVATION);
         mDoesPulse = a.getBoolean(R.styleable.FissionButton_fb_pulse, Constants.DEFAULT_DOES_PULSE);
         mMainButtonIconRes = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", Constants.DEFAULT_ICON);
         a.recycle();
-        //create main button
         TypedValue v = new TypedValue();
         mContext.getTheme().resolveAttribute(R.attr.colorAccent, v, true);
+        mIconDrawable = new RotatingIcon(getResources().getDrawable(mMainButtonIconRes, mContext.getTheme()));
         mButtonColor = v.data;
         mMainButton = new FissionButton(mContext);
-        //mMainButton.setBackground(getResources().getDrawable(mMainButtonIconRes));
-        mMainButton.setImageResource(mMainButtonIconRes);
+        //mMainButton.setImageResource(mMainButtonIconRes);
+        mMainButton.setImageDrawable(mIconDrawable);
         mMainButton.setElevation(mButtonDepth);
         mMainButton.setId(R.id.fission_button);
         mMainButton.setAction(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                toggle();
+                toggleState();
             }
         });
 
-
         addView(mMainButton, super.generateDefaultLayoutParams());
 
-        //create test button
         if(Constants.TEST_MODE) {
             mTestButton = new FloatingActionButton(mContext);
             mTestButton.setImageResource(mMainButtonIconRes);
@@ -107,39 +116,116 @@ public class FissionColony extends ViewGroup{
     }
 
 
-    private void toggle(){
-        isExpanded = !isExpanded;
-        if(isExpanded) {
-            mMainButton.startAnimation(mExpandAnim);
+    private void toggleState(){
+        if(mIsExpanded) {
+
+            doFusion();
+
         }else{
-            mMainButton.startAnimation(mCollapseAnim);
+
+            doFission();
         }
     }
+
+    private void doFusion(){
+        mIsExpanded = false;
+        //mMainButton.startAnimation(mMainCollapseAnim);
+        mExpandAnimSet.cancel();
+        mCollapseAnimSet.start();
+    }
+
+    private void doFission(){
+        mIsExpanded = true;
+        //mMainButton.startAnimation(mMainExpandAnim);
+        mCollapseAnimSet.cancel();
+        mExpandAnimSet.start();
+
+
+    }
+
 
 
 
     private void setAnimationParams(){
-        mExpandAnim = AnimationUtils.loadAnimation(getContext(), R.anim.expand_rotator);
-        mCollapseAnim = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_rotator);
+        mMainExpandAnim = AnimationUtils.loadAnimation(getContext(), R.anim.expand_rotator);
+        mMainCollapseAnim = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_rotator);
+        mMainExpandAnimator = new ObjectAnimator().ofFloat(mIconDrawable, "rotation", 0f, 0.25f);
+        mMainCollapseAnimator = new ObjectAnimator().ofFloat(mIconDrawable, "rotation", 0.25f, 0f);
+        //mMainExpandAnimator.setDuration(200);
+        mMainExpandAnimator.setInterpolator(new OvershootInterpolator());
+       // mMainExpandAnimator.setPropertyName("rotation");
+        //mMainExpandAnimator.setFloatValues(0f, 0.25f);
+
+
+        //mMainCollapseAnimator.setDuration(200);
+        mMainCollapseAnimator.setInterpolator(new OvershootInterpolator());
+        //mMainCollapseAnimator.setPropertyName("rotation");
+        //mMainCollapseAnimator.setFloatValues(0.25f, 0f);
+
+        //mMainExpandAnimator.setTarget(mMainButton);
+        //mMainCollapseAnimator.setTarget(mMainButton);
+
+        mExpandAnimSet.play(mMainExpandAnimator);
+        mCollapseAnimSet.play(mMainCollapseAnimator);
+
+        ObjectAnimator expandAnimator = new ObjectAnimator();
+        ObjectAnimator collapseAnimator = new ObjectAnimator();
+
+        expandAnimator.setProperty(View.TRANSLATION_Y);
+        expandAnimator.setInterpolator(new OvershootInterpolator());
+        collapseAnimator.setProperty(View.TRANSLATION_Y);
+        collapseAnimator.setInterpolator(new OvershootInterpolator());
+        expandAnimator.setTarget(mTestButton);
+        collapseAnimator.setTarget(mTestButton);
+        setLayerTypeForView(mTestButton, expandAnimator);
+        setLayerTypeForView(mTestButton, collapseAnimator);
+
+        //mExpandAnimSet.play(expandAnimator);
+        //mCollapseAnimSet.play(collapseAnimator);
+
+
+
+    }
+
+    private void setLayerTypeForView(final View view, Animator animator){
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                view.setLayerType(LAYER_TYPE_NONE, null);
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                view.setLayerType(LAYER_TYPE_HARDWARE, null);
+            }
+        });
     }
 
     public void setFissionButtonAnims(Animation expandAnimation, Animation collapseAnimation){
-        mExpandAnim = expandAnimation;
-        mCollapseAnim = collapseAnimation;
+        mMainExpandAnim = expandAnimation;
+        mMainCollapseAnim = collapseAnimation;
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         mMainButtonY = b - t - mMainButtonHeight - mShadowRadiusDelta;
         mMainButtonX = r - l - mMainButtonWidth;
-        mMainButton.layout(mMainButtonX, mMainButtonY, mMainButtonX+mMainButtonWidth, mMainButtonY+mMainButtonHeight);
+        mMainButton.layout(mMainButtonX, mMainButtonY, mMainButtonX + mMainButtonWidth, mMainButtonY + mMainButtonHeight);
 
         if(Constants.TEST_MODE){
             int mTestButtonY = mMainButtonY - mTestButton.getMeasuredHeight() - mShadowRadiusDelta
                     - mButtonSpacing;
             int mTestButtonX = mMainButtonX;
             mTestButton.layout(mTestButtonX, mTestButtonY, mTestButtonX + mTestButton.getMeasuredWidth(), mTestButtonY + mTestButton.getMeasuredHeight());
+            float collapseY = mMainButtonY - mTestButtonY;
+            float expandY = 0f;
+            mTestButton.setTranslationY(mIsExpanded? expandY: collapseY);
+            mTestButton.setAlpha(mIsExpanded? 1f: 0f);
+
         }
+
+        setAnimationParams();
+
     }
 
     @Override
@@ -158,5 +244,39 @@ public class FissionColony extends ViewGroup{
         setMeasuredDimension(width, height);
 
 
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        bringChildToFront(mMainButton);
+    }
+
+
+    private static class RotatingIcon extends LayerDrawable {
+        public RotatingIcon(Drawable drawable) {
+            super(new Drawable[] { drawable });
+        }
+
+        private float mRotation;
+
+        @SuppressWarnings("UnusedDeclaration")
+        public float getRotation() {
+            return mRotation;
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public void setRotation(float rotation) {
+            mRotation = rotation;
+            invalidateSelf();
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            canvas.save();
+            canvas.rotate(mRotation, getBounds().centerX(), getBounds().centerY());
+            super.draw(canvas);
+            canvas.restore();
+        }
     }
 }
