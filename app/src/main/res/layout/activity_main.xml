@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/ic_arrow_down"
         app:fb_enable_fission="false"
         app:fb_elevation="@dimen/default_elevation"
         app:fb_direction="up"

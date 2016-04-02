@@ -16,8 +16,11 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import com.eo5.amoeba.R;
@@ -54,6 +57,10 @@ public class FissionColony extends ViewGroup{
     private AnimatorSet mExpandAnimSet = new AnimatorSet().setDuration(Constants.DEFAULT_ANIMATION_DURATION);
     private AnimatorSet mCollapseAnimSet = new AnimatorSet().setDuration(Constants.DEFAULT_ANIMATION_DURATION);
     private ObjectAnimator mMainExpandAnimator, mMainCollapseAnimator;
+
+    enum ANIMATION {
+        ALPHA, TRANSLATE_Y
+    }
 
     public FissionColony(Context context){
         this(context, null, 0);
@@ -176,24 +183,47 @@ public class FissionColony extends ViewGroup{
         mExpandAnimSet.play(mMainExpandAnimator);
         mCollapseAnimSet.play(mMainCollapseAnimator);
 
+
+
+
+
+    }
+
+    private void setChildAnimation(ANIMATION type, View view, float startValue, float endValue){
         ObjectAnimator expandAnimator = new ObjectAnimator();
         ObjectAnimator collapseAnimator = new ObjectAnimator();
+        switch (type){
+            case ALPHA:
+                expandAnimator.setProperty(View.ALPHA);
+                expandAnimator.setInterpolator(new DecelerateInterpolator());
+                expandAnimator.setFloatValues(startValue, endValue);
+                collapseAnimator.setProperty(View.ALPHA);
+                collapseAnimator.setInterpolator(new DecelerateInterpolator(2f));
+                collapseAnimator.setFloatValues(endValue, startValue);
+                expandAnimator.setTarget(view);
+                collapseAnimator.setTarget(view);
 
 
-        expandAnimator.setProperty(View.TRANSLATION_Y);
-        expandAnimator.setInterpolator(new OvershootInterpolator());
-        collapseAnimator.setProperty(View.TRANSLATION_Y);
-        collapseAnimator.setInterpolator(new OvershootInterpolator());
-        expandAnimator.setTarget(mTestButton);
-        collapseAnimator.setTarget(mTestButton);
-        setLayerTypeForView(mTestButton, expandAnimator);
-        setLayerTypeForView(mTestButton, collapseAnimator);
+                break;
+            case TRANSLATE_Y:
+                expandAnimator.setProperty(View.TRANSLATION_Y);
+                expandAnimator.setInterpolator(new OvershootInterpolator());
+                expandAnimator.setFloatValues(startValue, endValue);
+                collapseAnimator.setProperty(View.TRANSLATION_Y);
+                collapseAnimator.setInterpolator(new OvershootInterpolator());
+                collapseAnimator.setFloatValues(endValue, startValue);
+                expandAnimator.setTarget(view);
+                collapseAnimator.setTarget(view);
 
+                break;
+            default:
+                break;
+
+        }
+        setLayerTypeForView(view, expandAnimator);
+        setLayerTypeForView(view, collapseAnimator);
         mExpandAnimSet.play(expandAnimator);
         mCollapseAnimSet.play(collapseAnimator);
-
-
-
     }
 
     private void setLayerTypeForView(final View view, Animator animator){
@@ -220,7 +250,7 @@ public class FissionColony extends ViewGroup{
         mMainButtonY = b - t - mMainButtonHeight - mShadowRadiusDelta;
         mMainButtonX = r - l - mMainButtonWidth;
         mMainButton.layout(mMainButtonX, mMainButtonY, mMainButtonX + mMainButtonWidth, mMainButtonY + mMainButtonHeight);
-
+        setAnimationParams();
         if(Constants.TEST_MODE){
             int mTestButtonY = mMainButtonY - mTestButton.getMeasuredHeight() - mShadowRadiusDelta
                     - mButtonSpacing;
@@ -229,11 +259,13 @@ public class FissionColony extends ViewGroup{
             float collapseY = mMainButtonY - mTestButtonY;
             float expandY = 0f;
             mTestButton.setTranslationY(mIsExpanded? expandY: collapseY);
-            mTestButton.setAlpha(mIsExpanded? 1f: 0f);
+            mTestButton.setAlpha(mIsExpanded ? 1f : 0f);
+            setChildAnimation(ANIMATION.TRANSLATE_Y, mTestButton, collapseY, expandY);
+            setChildAnimation(ANIMATION.ALPHA, mTestButton, 0f, 1f);
 
         }
 
-        setAnimationParams();
+
 
     }
 

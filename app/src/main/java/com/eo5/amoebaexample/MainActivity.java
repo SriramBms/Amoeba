@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         fab.setRippleColor(getResources().getColor(R.color.colorRipple));
         FissionColony fc = (FissionColony)findViewById(R.id.fab);
-        fc.setRotationForIcon(0f, 45f);
+        fc.setRotationForIcon(0f, 180f);
         //fc.setFissionButtonAnims(AnimationUtils.loadAnimation(this, R.anim.expand_rotator), AnimationUtils.loadAnimation(this, R.anim.collapse_rotator));
     }
 
