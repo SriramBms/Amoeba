@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,8 @@ public class FissionColony extends ViewGroup{
     private RotatingIcon mIconDrawable;
 
     //animation params
+    private float mStartRotation = 0f;
+    private float mEndRotation = 90f;
     private Animation mMainExpandAnim, mMainCollapseAnim;
     private AnimatorSet mExpandAnimSet = new AnimatorSet().setDuration(Constants.DEFAULT_ANIMATION_DURATION);
     private AnimatorSet mCollapseAnimSet = new AnimatorSet().setDuration(Constants.DEFAULT_ANIMATION_DURATION);
@@ -145,12 +148,16 @@ public class FissionColony extends ViewGroup{
 
 
 
+    public void setRotationForIcon(float startRotation, float endRotation){
+        mStartRotation = startRotation;
+        mEndRotation = endRotation;
+    }
 
     private void setAnimationParams(){
-        mMainExpandAnim = AnimationUtils.loadAnimation(getContext(), R.anim.expand_rotator);
-        mMainCollapseAnim = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_rotator);
-        mMainExpandAnimator = new ObjectAnimator().ofFloat(mIconDrawable, "rotation", 0f, 0.25f);
-        mMainCollapseAnimator = new ObjectAnimator().ofFloat(mIconDrawable, "rotation", 0.25f, 0f);
+       // mMainExpandAnim = AnimationUtils.loadAnimation(getContext(), R.anim.expand_rotator);
+       // mMainCollapseAnim = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_rotator);
+        mMainExpandAnimator = new ObjectAnimator().ofFloat(mIconDrawable, "rotation", mStartRotation, mEndRotation);
+        mMainCollapseAnimator = new ObjectAnimator().ofFloat(mIconDrawable, "rotation", mEndRotation, mStartRotation);
         //mMainExpandAnimator.setDuration(200);
         mMainExpandAnimator.setInterpolator(new OvershootInterpolator());
        // mMainExpandAnimator.setPropertyName("rotation");
@@ -164,12 +171,14 @@ public class FissionColony extends ViewGroup{
 
         //mMainExpandAnimator.setTarget(mMainButton);
         //mMainCollapseAnimator.setTarget(mMainButton);
-
+        mExpandAnimSet.setDuration(Constants.DEFAULT_ANIMATION_DURATION);
+        mCollapseAnimSet.setDuration(Constants.DEFAULT_ANIMATION_DURATION);
         mExpandAnimSet.play(mMainExpandAnimator);
         mCollapseAnimSet.play(mMainCollapseAnimator);
 
         ObjectAnimator expandAnimator = new ObjectAnimator();
         ObjectAnimator collapseAnimator = new ObjectAnimator();
+
 
         expandAnimator.setProperty(View.TRANSLATION_Y);
         expandAnimator.setInterpolator(new OvershootInterpolator());
@@ -180,8 +189,8 @@ public class FissionColony extends ViewGroup{
         setLayerTypeForView(mTestButton, expandAnimator);
         setLayerTypeForView(mTestButton, collapseAnimator);
 
-        //mExpandAnimSet.play(expandAnimator);
-        //mCollapseAnimSet.play(collapseAnimator);
+        mExpandAnimSet.play(expandAnimator);
+        mCollapseAnimSet.play(collapseAnimator);
 
 
 
@@ -262,11 +271,13 @@ public class FissionColony extends ViewGroup{
 
         @SuppressWarnings("UnusedDeclaration")
         public float getRotation() {
+            Log.v(Constants.TAG, "get rotation:"+mRotation);
             return mRotation;
         }
 
         @SuppressWarnings("UnusedDeclaration")
         public void setRotation(float rotation) {
+            Log.v(Constants.TAG, "set rotation:"+rotation);
             mRotation = rotation;
             invalidateSelf();
         }
