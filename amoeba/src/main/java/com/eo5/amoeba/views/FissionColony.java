@@ -199,7 +199,7 @@ public class FissionColony extends ViewGroup{
                 expandAnimator.setInterpolator(new DecelerateInterpolator());
                 expandAnimator.setFloatValues(startValue, endValue);
                 collapseAnimator.setProperty(View.ALPHA);
-                collapseAnimator.setInterpolator(new AccelerateInterpolator(2f));
+                collapseAnimator.setInterpolator(new DecelerateInterpolator(4f));
                 collapseAnimator.setFloatValues(endValue, startValue);
                 expandAnimator.setTarget(view);
                 collapseAnimator.setTarget(view);
