@@ -17,6 +17,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
@@ -198,7 +199,7 @@ public class FissionColony extends ViewGroup{
                 expandAnimator.setInterpolator(new DecelerateInterpolator());
                 expandAnimator.setFloatValues(startValue, endValue);
                 collapseAnimator.setProperty(View.ALPHA);
-                collapseAnimator.setInterpolator(new DecelerateInterpolator(2f));
+                collapseAnimator.setInterpolator(new AccelerateInterpolator(2f));
                 collapseAnimator.setFloatValues(endValue, startValue);
                 expandAnimator.setTarget(view);
                 collapseAnimator.setTarget(view);
