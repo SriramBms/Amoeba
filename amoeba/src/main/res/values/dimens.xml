@@ -2,5 +2,7 @@
 <resources>
     <dimen name="default_elevation">2dp</dimen>
     <dimen name="button_spacing">16dp</dimen>
+    <dimen name="fanout_button_spacing">48dp</dimen>
+    <dimen name="fanout_outer_padding">24dp</dimen>
     <dimen name="button_shadow_width">4dp</dimen>
 </resources>

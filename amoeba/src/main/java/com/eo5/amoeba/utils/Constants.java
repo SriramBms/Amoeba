@@ -13,8 +13,9 @@ public class Constants {
     public final static boolean DEFAULT_DOES_PULSE = false;
     public final static int DEFAULT_FISSION_DIRECTION = Fission.UP;
     public final static int DEFAULT_ANIMATION_DURATION = 400;
-    public final static float ROTATION_BEFORE_FISSION = 0f;
-    public final static float ROTATION_AFTER_FISSION = 180f;
-    public final static int MIN_MARGIN = 16;
+    public final static int DEFAULT_START_ROTATION = 0;
+    public final static int DEFAULT_END_ROTATION = 45;
+    public final static int DEFAULT_MARGIN = 16;
     public final static int DEFAULT_ICON = R.drawable.ic_arrow_down;
+
 }

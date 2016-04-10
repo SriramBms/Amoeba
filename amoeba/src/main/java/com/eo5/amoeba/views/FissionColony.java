@@ -12,19 +12,14 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import com.eo5.amoeba.R;
+import com.eo5.amoeba.utils.AnimUtils;
 import com.eo5.amoeba.utils.Constants;
 
 /**
@@ -49,12 +44,11 @@ public class FissionColony extends ViewGroup{
     private int mShadowRadiusDelta;
     private int mButtonSpacing;
     private float mRotation;
-    private RotatingIcon mIconDrawable;
+    private AnimUtils.RotatingIcon mIconDrawable;
 
     //animation params
     private float mStartRotation = 0f;
     private float mEndRotation = 90f;
-    private Animation mMainExpandAnim, mMainCollapseAnim;
     private AnimatorSet mExpandAnimSet = new AnimatorSet().setDuration(Constants.DEFAULT_ANIMATION_DURATION);
     private AnimatorSet mCollapseAnimSet = new AnimatorSet().setDuration(Constants.DEFAULT_ANIMATION_DURATION);
     private ObjectAnimator mMainExpandAnimator, mMainCollapseAnimator;
@@ -88,7 +82,7 @@ public class FissionColony extends ViewGroup{
         a.recycle();
         TypedValue v = new TypedValue();
         mContext.getTheme().resolveAttribute(R.attr.colorAccent, v, true);
-        mIconDrawable = new RotatingIcon(getResources().getDrawable(mMainButtonIconRes, mContext.getTheme()));
+        mIconDrawable = new AnimUtils.RotatingIcon(getResources().getDrawable(mMainButtonIconRes, mContext.getTheme()));
         mButtonColor = v.data;
         mMainButton = new FissionButton(mContext);
         //mMainButton.setImageResource(mMainButtonIconRes);
@@ -126,68 +120,57 @@ public class FissionColony extends ViewGroup{
 
     }
 
+    public void doFission(){
+        if(mIsExpanded)
+            return;
+
+        expandButtons();
+    }
+
+    public void doFusion(){
+        if(!mIsExpanded)
+            return;
+
+        collapseButtons();
+    }
+
+
 
     private void toggleState(){
         if(mIsExpanded) {
 
-            doFusion();
+            collapseButtons();
 
         }else{
 
-            doFission();
+            expandButtons();
         }
     }
 
-    private void doFusion(){
+    private void collapseButtons(){
         mIsExpanded = false;
-        //mMainButton.startAnimation(mMainCollapseAnim);
         mExpandAnimSet.cancel();
         mCollapseAnimSet.start();
     }
 
-    private void doFission(){
+    private void expandButtons(){
         mIsExpanded = true;
-        //mMainButton.startAnimation(mMainExpandAnim);
         mCollapseAnimSet.cancel();
         mExpandAnimSet.start();
-
-
     }
-
-
 
     public void setRotationForIcon(float startRotation, float endRotation){
         mStartRotation = startRotation;
         mEndRotation = endRotation;
     }
 
-    private void setAnimationParams(){
-       // mMainExpandAnim = AnimationUtils.loadAnimation(getContext(), R.anim.expand_rotator);
-       // mMainCollapseAnim = AnimationUtils.loadAnimation(getContext(), R.anim.collapse_rotator);
+    private void setAnimationParamsForMainIcon(){
         mMainExpandAnimator = new ObjectAnimator().ofFloat(mIconDrawable, "rotation", mStartRotation, mEndRotation);
         mMainCollapseAnimator = new ObjectAnimator().ofFloat(mIconDrawable, "rotation", mEndRotation, mStartRotation);
-        //mMainExpandAnimator.setDuration(200);
         mMainExpandAnimator.setInterpolator(new OvershootInterpolator());
-       // mMainExpandAnimator.setPropertyName("rotation");
-        //mMainExpandAnimator.setFloatValues(0f, 0.25f);
-
-
-        //mMainCollapseAnimator.setDuration(200);
         mMainCollapseAnimator.setInterpolator(new OvershootInterpolator());
-        //mMainCollapseAnimator.setPropertyName("rotation");
-        //mMainCollapseAnimator.setFloatValues(0.25f, 0f);
-
-        //mMainExpandAnimator.setTarget(mMainButton);
-        //mMainCollapseAnimator.setTarget(mMainButton);
-        mExpandAnimSet.setDuration(Constants.DEFAULT_ANIMATION_DURATION);
-        mCollapseAnimSet.setDuration(Constants.DEFAULT_ANIMATION_DURATION);
         mExpandAnimSet.play(mMainExpandAnimator);
         mCollapseAnimSet.play(mMainCollapseAnimator);
-
-
-
-
-
     }
 
     private void setChildAnimation(ANIMATION type, View view, float startValue, float endValue){
@@ -221,37 +204,21 @@ public class FissionColony extends ViewGroup{
                 break;
 
         }
-        setLayerTypeForView(view, expandAnimator);
-        setLayerTypeForView(view, collapseAnimator);
+        AnimUtils.setLayerTypeForView(view, expandAnimator);
+        AnimUtils.setLayerTypeForView(view, collapseAnimator);
         mExpandAnimSet.play(expandAnimator);
         mCollapseAnimSet.play(collapseAnimator);
     }
 
-    private void setLayerTypeForView(final View view, Animator animator){
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                view.setLayerType(LAYER_TYPE_NONE, null);
-            }
 
-            @Override
-            public void onAnimationStart(Animator animation) {
-                view.setLayerType(LAYER_TYPE_HARDWARE, null);
-            }
-        });
-    }
 
-    public void setFissionButtonAnims(Animation expandAnimation, Animation collapseAnimation){
-        mMainExpandAnim = expandAnimation;
-        mMainCollapseAnim = collapseAnimation;
-    }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         mMainButtonY = b - t - mMainButtonHeight - mShadowRadiusDelta;
-        mMainButtonX = r - l - mMainButtonWidth;
+        mMainButtonX = r - l - mMainButtonWidth - mShadowRadiusDelta;
         mMainButton.layout(mMainButtonX, mMainButtonY, mMainButtonX + mMainButtonWidth, mMainButtonY + mMainButtonHeight);
-        setAnimationParams();
+        setAnimationParamsForMainIcon();
         if(Constants.TEST_MODE){
             int mTestButtonY = mMainButtonY - mTestButton.getMeasuredHeight() - mShadowRadiusDelta
                     - mButtonSpacing;
@@ -295,32 +262,5 @@ public class FissionColony extends ViewGroup{
     }
 
 
-    private static class RotatingIcon extends LayerDrawable {
-        public RotatingIcon(Drawable drawable) {
-            super(new Drawable[] { drawable });
-        }
 
-        private float mRotation;
-
-        @SuppressWarnings("UnusedDeclaration")
-        public float getRotation() {
-            Log.v(Constants.TAG, "get rotation:"+mRotation);
-            return mRotation;
-        }
-
-        @SuppressWarnings("UnusedDeclaration")
-        public void setRotation(float rotation) {
-            Log.v(Constants.TAG, "set rotation:"+rotation);
-            mRotation = rotation;
-            invalidateSelf();
-        }
-
-        @Override
-        public void draw(Canvas canvas) {
-            canvas.save();
-            canvas.rotate(mRotation, getBounds().centerX(), getBounds().centerY());
-            super.draw(canvas);
-            canvas.restore();
-        }
-    }
 }

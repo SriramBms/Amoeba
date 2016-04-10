@@ -1,5 +1,7 @@
 package com.eo5.amoebaexample;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,14 +15,14 @@ import android.view.animation.AnimationUtils;
 import com.eo5.amoeba.views.FissionColony;
 
 public class MainActivity extends AppCompatActivity {
-
+    private Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        mContext = this;
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fission_button);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
         fab.setRippleColor(getResources().getColor(R.color.colorRipple));
         FissionColony fc = (FissionColony)findViewById(R.id.fab);
         fc.setRotationForIcon(0f, 180f);
+        findViewById(R.id.fission_button_test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                startActivity(new Intent(MainActivity.this, FanoutActivity.class));
+            }
+        });
         //fc.setFissionButtonAnims(AnimationUtils.loadAnimation(this, R.anim.expand_rotator), AnimationUtils.loadAnimation(this, R.anim.collapse_rotator));
     }
 

@@ -5,11 +5,25 @@
         <attr name="fb_pulse" format="boolean"/>
         <attr name="fb_enable_fission" format="boolean"/>
         <attr name="fb_icon" format="reference"/>
+        <attr name="fb_start_rotation" format="integer"/>
+        <attr name="fb_end_rotation" format="integer"/>
         <attr name="fb_direction" format="integer">
             <enum name="up" value="1"/>
             <enum name="down" value="2"/>
             <enum name="right" value="3"/>
             <enum name="left" value="4"/>
         </attr>
+    </declare-styleable>
+    <declare-styleable name="FanOutButton">
+        <attr name="fan_elevation" format="dimension"/>
+        <attr name="fan_main_icon" format="reference" />
+        <attr name="fan_top_icon" format="reference" />
+        <attr name="fan_left_icon" format="reference" />
+        <attr name="fan_angled_icon" format="reference" />
+        <attr name="fan_start_rotation" format="integer"/>
+        <attr name="fan_end_rotation" format="integer"/>
+        <attr name="fan_enable_backdrop" format="boolean"/>
+        <attr name="fan_backdrop_color" format="color"/>
+        <attr name="fan_margin" format="dimension"/>
     </declare-styleable>
 </resources>
