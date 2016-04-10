@@ -2,11 +2,11 @@
 
 This repo contains two features that might be separated into two libraries in future
 
-Amoeba, a FloatingActionButton with organic animations
+**FissionColony**, a FloatingActionButton with organic animations
 
 and 
 
-FanoutButton, a FloatingActionButton that expands to display multiple buttons when clicked
+**FanoutButton**, a FloatingActionButton that expands to display multiple buttons when clicked
 
 
 FanoutButton
@@ -35,7 +35,7 @@ Usage
 ```
 
 ==============
-Features not yet completely implemented
+###Features not yet completely implemented
 
 ```
 fan_elevation
