@@ -11,7 +11,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,7 @@ public class FanOutButton extends ViewGroup{
 
     private Context mContext;
     private FissionButton mMainButton;
+    private ArcView mArcView;
     private float mButtonElevation;
     private int mMainButtonIconRes;
     private AnimUtils.RotatingIcon mIconDrawable;
@@ -58,6 +58,8 @@ public class FanOutButton extends ViewGroup{
     private int mAngledButtonY;
     private int mOriginX;
     private int mOriginY;
+    private int mCircleViewX;
+    private int mCircleViewY;
     private int mFanMargin;
     private Canvas mCanvas;
 
@@ -122,6 +124,11 @@ public class FanOutButton extends ViewGroup{
         mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mCirclePaint.setStyle(Paint.Style.FILL);
         mCirclePaint.setColor(mBackdropColor);
+        if(mIsBackdropEnabled) {
+            mArcView = new ArcView(mContext, mBackdropColor);
+            addView(mArcView);
+        }
+
 
         addView(mMainButton, generateDefaultLayoutParams());
         addView(mTopButton = createChildButton(mTopButtonRes, R.id.fanout_button_top), generateDefaultLayoutParams());
@@ -132,7 +139,7 @@ public class FanOutButton extends ViewGroup{
 
     private FloatingActionButton createChildButton(@DrawableRes int iconResource, @IdRes int id){
         FloatingActionButton newButton = new FloatingActionButton(mContext);
-        newButton.setElevation(0);
+        newButton.setElevation(mButtonElevation);
         newButton.setImageResource(iconResource);
         newButton.setId(id);
         return newButton;
@@ -153,8 +160,10 @@ public class FanOutButton extends ViewGroup{
 
     private void expandButtons(){
         mIsExpanded = true;
+
         mMainCollapseSet.cancel();
         mMainExpandSet.start();
+
     }
 
     private void collapseButtons(){
@@ -164,9 +173,10 @@ public class FanOutButton extends ViewGroup{
     }
 
 
+
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
         mMainButtonY = b - t - mMainButtonHeight - mShadowRadiusDelta - mFanMargin;
         mMainButtonX = r - l - mMainButtonWidth - mShadowRadiusDelta - mFanMargin;
         mOriginX = mMainButtonX + mMainButtonWidth/2;
@@ -174,8 +184,8 @@ public class FanOutButton extends ViewGroup{
 
         mMainButton.layout(mMainButtonX, mMainButtonY, mMainButtonX + mMainButtonWidth, mMainButtonY + mMainButtonHeight);
 
-        int circleViewY = b - t - mFanoutRadius;
-        int circleViewX = r - l - mFanoutRadius;
+        mCircleViewY = b - mFanMargin - mMainButtonHeight/2;
+        mCircleViewX = r - mFanMargin - mMainButtonWidth/2;
 
 
         //layout params for top button
@@ -187,15 +197,20 @@ public class FanOutButton extends ViewGroup{
         mLeftButton.layout(mLeftButtonX, mMainButtonY, mLeftButtonX + mMainButtonWidth, mMainButtonY + mMainButtonHeight);
 
         int circleRadius = Math.max((mFanoutRadius -mOuterPadding-mMainButtonHeight-mShadowRadiusDelta - mFanMargin),(mFanoutRadius -mOuterPadding-mMainButtonWidth-mShadowRadiusDelta - mFanMargin));
-
+        if(mIsBackdropEnabled) {
+            mArcView.layout(r - l - mFanoutRadius, b - t - mFanoutRadius, r - l, b - t);
+        }
 
         int angledButtonCenterX = (int) (mOriginX - circleRadius* Math.cos(45 * Math.PI/180f));
         int angledButtonCenterY = (int) (mOriginY - circleRadius* Math.sin(45 * Math.PI/180f));
 
-        mAngledButtonX = angledButtonCenterX-mMainButtonWidth/2;
-        mAngledButtonY = angledButtonCenterY-mMainButtonHeight/2;
+        mAngledButtonX = angledButtonCenterX-mMainButtonWidth / 2;
+        mAngledButtonY = angledButtonCenterY - mMainButtonHeight / 2;
         mAngledButton.layout(mAngledButtonX, mAngledButtonY, mAngledButtonX + mMainButtonWidth, mAngledButtonY + mMainButtonHeight);
         setAnimationParams();
+
+        //circleview for backdrop
+
         bringChildToFront(mMainButton);
     }
 
@@ -210,23 +225,23 @@ public class FanOutButton extends ViewGroup{
         int topTranslationY = mMainButtonY - mTopButtonY;
         mTopButton.setTranslationY(mIsExpanded ? 0f : topTranslationY);
         mTopButton.setAlpha(mIsExpanded ? 1f : 0f);
-        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.TRANSLATE_Y, mTopButton, topTranslationY, 0f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET));
-        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.ALPHA, mTopButton, 0f, 1f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET));
+        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.TRANSLATE_Y, mTopButton, topTranslationY, 0f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET, DEFAULT_ICON_FANOUT_OFFSET*3));
+        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.ALPHA, mTopButton, 0f, 1f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET, DEFAULT_ICON_FANOUT_OFFSET*3));
 
         int leftTranslationX = mMainButtonX - mLeftButtonX;
         mLeftButton.setTranslationX(mIsExpanded ? 0f : leftTranslationX);
         mLeftButton.setAlpha(mIsExpanded ? 1f : 0f);
-        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.TRANSLATE_X, mLeftButton, leftTranslationX, 0f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*3));
-        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.ALPHA, mLeftButton, 0f, 1f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*3));
+        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.TRANSLATE_X, mLeftButton, leftTranslationX, 0f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*3, DEFAULT_ICON_FANOUT_OFFSET));
+        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.ALPHA, mLeftButton, 0f, 1f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*3, DEFAULT_ICON_FANOUT_OFFSET));
 
         int angledTranslationX = mMainButtonX - mAngledButtonX;
         int angledTranslationY = mMainButtonY - mAngledButtonY;
         mAngledButton.setTranslationX(mIsExpanded ? 0f : angledTranslationX);
         mAngledButton.setTranslationY(mIsExpanded ? 0f : angledTranslationY);
         mAngledButton.setAlpha(mIsExpanded ? 1f : 0f);
-        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.TRANSLATE_X, mAngledButton, angledTranslationX, 0f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*2));
-        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.TRANSLATE_Y, mAngledButton, angledTranslationY, 0f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*2));
-        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.ALPHA, mAngledButton, 0f, 1f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*2));
+        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.TRANSLATE_X, mAngledButton, angledTranslationX, 0f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*2, DEFAULT_ICON_FANOUT_OFFSET*2));
+        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.TRANSLATE_Y, mAngledButton, angledTranslationY, 0f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*2, DEFAULT_ICON_FANOUT_OFFSET*2));
+        addToAnimatorSet(AnimUtils.setChildAnimation(AnimUtils.ANIMATION.ALPHA, mAngledButton, 0f, 1f, DEFAULT_ICON_FANOUT_DURATION, DEFAULT_ICON_FANOUT_OFFSET*2, DEFAULT_ICON_FANOUT_OFFSET*2));
 
 
     }

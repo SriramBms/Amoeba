@@ -71,7 +71,7 @@ public class AnimUtils {
         });
     }
 
-    public static AnimatorGroup setChildAnimation(ANIMATION type, View view, float startValue, float endValue, int duration, int startoffset){
+    public static AnimatorGroup setChildAnimation(ANIMATION type, View view, float startValue, float endValue, int duration, int expandOffset, int collapseOffset){
         ObjectAnimator expandAnimator = new ObjectAnimator();
         ObjectAnimator collapseAnimator = new ObjectAnimator();
         switch (type){
@@ -106,7 +106,8 @@ public class AnimUtils {
         collapseAnimator.setTarget(view);
         expandAnimator.setDuration(duration);
         collapseAnimator.setDuration(duration);
-        expandAnimator.setStartDelay(startoffset);
+        expandAnimator.setStartDelay(expandOffset);
+        collapseAnimator.setStartDelay(collapseOffset);
         AnimUtils.setLayerTypeForView(view, expandAnimator);
         AnimUtils.setLayerTypeForView(view, collapseAnimator);
 
