@@ -38,8 +38,5 @@ Usage
 ###Features not yet completely implemented
 
 ```
-fan_elevation
-```
-```
 fan_enable_backdrop
 ```
