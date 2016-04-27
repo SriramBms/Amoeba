@@ -2,7 +2,7 @@ language: android
 jdk: oraclejdk7
 env:
   global:
-    - ADB_INSTALL_TIMEOUT=8
+    - ADB_INSTALL_TIMEOUT=4
   matrix:
     - ANDROID_SDKS=android-23,sysimg-23  ANDROID_TARGET=android-23  ANDROID_ABI=armeabi-v7a
 
@@ -15,6 +15,9 @@ before_script:
   - android-wait-for-emulator
   - adb devices
   - adb shell input keyevent 82 &
+
+script:
+  - gradlew build
 
 android:
   components:
