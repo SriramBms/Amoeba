@@ -1,5 +1,6 @@
 #This is still a work in progress
 
+
 This repo contains two features that might be separated into two libraries in future
 
 **FissionColony**, a FloatingActionButton with organic animations
@@ -39,4 +40,10 @@ Usage
 
 ```
 fan_enable_backdrop
+
 ```
+
+================
+### Travis-CI status
+
+[![Build Status](https://travis-ci.org/SriramBms/Amoeba.svg?branch=master)](https://travis-ci.org/SriramBms/Amoeba)
