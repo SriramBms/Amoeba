@@ -47,3 +47,7 @@ fan_enable_backdrop
 ### Travis-CI status
 
 [![Build Status](https://travis-ci.org/SriramBms/Amoeba.svg?branch=master)](https://travis-ci.org/SriramBms/Amoeba)
+
+================
+### License
+#### [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
