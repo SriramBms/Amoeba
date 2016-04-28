@@ -1,4 +1,4 @@
-#This is still a work in progress
+# This is a work in progress
 
 
 This repo contains two features that might be separated into two libraries in future
@@ -7,7 +7,7 @@ This repo contains two features that might be separated into two libraries in fu
 
 and 
 
-**FanoutButton**, a FloatingActionButton that expands to display multiple buttons when clicked
+**FanoutButton**, a FloatingActionButton that expands radially to display multiple action buttons
 
 
 FanoutButton
@@ -36,12 +36,18 @@ Usage
 ```
 
 ==============
-###Features not yet completely implemented
+### Features not yet completely implemented
+
+#### FanOutButton
 
 ```
 fan_enable_backdrop
 
 ```
+
+
+#### FissionColony
+
 
 ================
 ### Travis-CI status
