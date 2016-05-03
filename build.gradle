@@ -17,7 +17,10 @@ allprojects {
         jcenter()
     }
 }
-
+task androidJavadocs(type: Javadoc) {
+    // add this line
+    failOnError false
+}
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

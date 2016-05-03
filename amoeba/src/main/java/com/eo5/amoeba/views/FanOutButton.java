@@ -19,9 +19,27 @@ import android.view.animation.OvershootInterpolator;
 import com.eo5.amoeba.R;
 import com.eo5.amoeba.utils.AnimUtils;
 import com.eo5.amoeba.utils.Constants;
+/*
+
+        Copyright [2016] [Sriram Shantharam]
+
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+
+*/
 
 /**
- * Created by Sriram on 4/8/2016.
+ * FantOutButton Class, a FloatingActionButton that pushes out
+ * multiple FloatingActionButtons radially
  */
 public class FanOutButton extends ViewGroup{
 

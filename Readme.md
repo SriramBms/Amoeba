@@ -7,7 +7,17 @@ This repo contains two features that might be separated into two libraries in fu
 
 and 
 
-**FanoutButton**, a FloatingActionButton that expands radially to display multiple action buttons
+**FanoutButton**, a FloatingActionButton that expands radially to display multiple FloatingActionButtons
+
+
+Installation
+============
+
+### Gradle
+
+```
+
+```
 
 
 FanoutButton
@@ -16,6 +26,13 @@ FanoutButton
 ![Fanout Button](images/fanoutgif.gif)
 
 Usage
+=====
+
+Use Resource IDs ```fanout_button_top```, ```fanout_button_left```, ```fanout_button_angled``` to assign actions to the top, left and the button angled at 45 degrees
+
+```fan_margin``` - Assigns FloatingActionButton margin in its' parent. This is in addition to layout_margin. You can have ```layout_margin="0dp"``` and use this instead (At this point this option is redundant and will make sense when the backdrop feature is implemented)
+
+```fan_start_rotation``` and ```fan_end_rotation``` defines the start and end rotation of the main FloatingActionButton (+)
 
 ```
 <com.eo5.amoeba.views.FanOutButton
