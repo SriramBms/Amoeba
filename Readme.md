@@ -16,7 +16,7 @@ Installation
 ### Gradle
 
 ```
-
+compile 'com.yfo.opensource:amoeba:1.0'
 ```
 
 
