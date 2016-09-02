@@ -161,7 +161,6 @@ header {
   width:270px;
   float:left;
   position:fixed;
-  background: #ffe066;
   -webkit-font-smoothing:subpixel-antialiased;
 }
 
@@ -254,6 +253,7 @@ footer {
   div.wrapper {
     width:auto;
     margin:0;
+    background: 50514f;
   }
 
   header, section, footer {
